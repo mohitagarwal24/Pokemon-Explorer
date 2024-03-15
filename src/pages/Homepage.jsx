@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import PokemonDetails from "./PokemonDetails";
-import SearchBar from "./SearchBar";
-import FilterOptions from "./FilterOptions";
+import SearchBar from "../components/SearchBar";
+import FilterOptions from "../components/FilterOptions";
 import styled from "styled-components";
-import { Grid, Modal, Paper, Typography, IconButton } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import { Grid } from "@mui/material";
+import PokemonCard from "../components/PokemonCard";
+import PokemonDetailsPopUp from "./PokemonDetailsPopUp";
 
 const StyledHomepage = styled.div`
   padding: 20px;
@@ -45,59 +45,14 @@ const StyledGridItem = styled(Grid)`
   cursor: pointer;
 `;
 
-const StyledPokemonCard = styled(Paper)`
-  padding: 10px;
-  text-align: center;
-  border-radius: 5px;
-  transition: transform 0.2s;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: #fff;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
-  }
-`;
-
-const PokemonImage = styled.img`
-  width: 120px;
-  height: 120px;
-  background-color: lightcyan;
-  border-radius: 50%;
-`;
-
-const StyledModalContent = styled(Paper)`
-  padding: 20px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #fff;
-  border-radius: 10px;
-  @media screen and (max-width: 900px) {
-    max-height: 80vh;
-    overflow-y: auto;
-    padding: 5px;
-  }
-`;
-
-const CloseButton = styled(IconButton)`
-  position: fixed;
-  top: 5px;
-  right: 5px;
-`;
-
 const Homepage = () => {
   const [pokemonList, setPokemonList] = useState([]);
   const [filteredPokemonList, setFilteredPokemonList] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPokemon, setSelectedPokemon] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("");
   const [selectedPokemonOfType, setSelectedPokemonOfType] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchPokemonList = async () => {
@@ -156,10 +111,6 @@ const Homepage = () => {
     setFilteredPokemonList(filteredList);
   }, [pokemonList, searchTerm, selectedType, selectedPokemonOfType]);
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
   const handleSearch = (term) => {
     setSearchTerm(term);
   };
@@ -180,14 +131,12 @@ const Homepage = () => {
     }
   };
 
-  // Function to capitalize the first letter of a string
   const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
-      // Trigger search when Enter key is pressed
       handleSearch(event.target.value);
     }
   };
@@ -198,15 +147,7 @@ const Homepage = () => {
       <SearchandFilter>
         <SearchBar onSearch={handleSearch} onKeyPress={handleKeyPress} />
         <FilterOptions
-          types={[
-            "fire",
-            "water",
-            "grass",
-            "electric",
-            "bug",
-            "flying",
-            "poison",
-          ]}
+          types={["fire", "water", "grass", "bug", "flying", "poison"]}
           selectedType={selectedType}
           onSelectType={handleTypeSelect}
         />
@@ -221,28 +162,19 @@ const Homepage = () => {
             md={3}
             onClick={() => handleClickPokemon(pokemon.name)}
           >
-            <StyledPokemonCard>
-              <PokemonImage
-                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
-                  pokemon.url.split("/")[6]
-                }.png`}
-                alt={pokemon.name}
-              />
-              <Typography variant="body1">
-                {capitalizeFirstLetter(pokemon.name)}
-              </Typography>
-            </StyledPokemonCard>
+            <PokemonCard
+              pokemon={pokemon}
+              capitalizeFirstLetter={capitalizeFirstLetter}
+            />
           </StyledGridItem>
         ))}
       </StyledGrid>
-      <Modal open={isModalOpen} onClose={closeModal}>
-        <StyledModalContent>
-          <CloseButton onClick={closeModal}>
-            <CloseIcon />
-          </CloseButton>
-          {selectedPokemon && <PokemonDetails pokemon={selectedPokemon} />}
-        </StyledModalContent>
-      </Modal>
+      <PokemonDetailsPopUp
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+        selectedPokemon={selectedPokemon}
+        setSelectedPokemon={setSelectedPokemon}
+      />
     </StyledHomepage>
   );
 };
