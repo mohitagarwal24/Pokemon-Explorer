@@ -26,7 +26,7 @@ const StyledPokemonCard = styled(Paper)`
   }
 `;
 
-const PokemonCard = ({pokemon}) => {
+const PokemonCard = ({ pokemon }) => {
   const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
@@ -38,6 +38,7 @@ const PokemonCard = ({pokemon}) => {
           pokemon.url.split("/")[6]
         }.png`}
         alt={pokemon.name}
+        loading="lazy"
       />
       <Typography variant="body1">
         {capitalizeFirstLetter(pokemon.name)}

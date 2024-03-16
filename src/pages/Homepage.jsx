@@ -3,7 +3,7 @@ import axios from "axios";
 import SearchBar from "../components/SearchBar";
 import FilterOptions from "../components/FilterOptions";
 import styled from "styled-components";
-import { Grid } from "@mui/material";
+import { Grid, CircularProgress, Backdrop } from "@mui/material";
 import PokemonCard from "../components/PokemonCard";
 import PokemonDetailsPopUp from "./PokemonDetailsPopUp";
 
@@ -45,6 +45,14 @@ const StyledGridItem = styled(Grid)`
   cursor: pointer;
 `;
 
+const LoadingContainer = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+`;
+
 const Homepage = () => {
   const [pokemonList, setPokemonList] = useState([]);
   const [filteredPokemonList, setFilteredPokemonList] = useState([]);
@@ -53,6 +61,9 @@ const Homepage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("");
   const [selectedPokemonOfType, setSelectedPokemonOfType] = useState([]);
+  const [isLoading, setIsLoading] = useState(false); // State for tracking loading status
+  const [isSearching, setIsSearching] = useState(false); // State for tracking search loading status
+  const [isFiltering, setIsFiltering] = useState(false); // State for tracking filter loading status
 
   useEffect(() => {
     const fetchPokemonList = async () => {
@@ -73,6 +84,7 @@ const Homepage = () => {
   useEffect(() => {
     const fetchPokemonOfType = async () => {
       if (selectedType) {
+        setIsFiltering(true);
         try {
           const response = await axios.get(
             `https://pokeapi.co/api/v2/type/${selectedType}`
@@ -81,11 +93,13 @@ const Homepage = () => {
             (pokemon) => pokemon.pokemon.name
           );
           setSelectedPokemonOfType(pokemonOfType);
+          setIsFiltering(false);
         } catch (error) {
           console.error(
             `Error fetching Pokémon of type ${selectedType}:`,
             error
           );
+          setIsFiltering(false);
         }
       }
     };
@@ -103,9 +117,11 @@ const Homepage = () => {
     }
 
     if (searchTerm) {
+      setIsSearching(true);
       filteredList = filteredList.filter((pokemon) =>
         pokemon.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
+      setIsSearching(false);
     }
 
     setFilteredPokemonList(filteredList);
@@ -121,13 +137,16 @@ const Homepage = () => {
 
   const handleClickPokemon = async (name) => {
     try {
+      setIsLoading(true); // Set loading to true when fetching starts
       const response = await axios.get(
         `https://pokeapi.co/api/v2/pokemon/${name}`
       );
       setSelectedPokemon(response.data);
       setIsModalOpen(true);
+      setIsLoading(false); // Set loading to false when fetching completes
     } catch (error) {
       console.error(`Error fetching details for Pokemon ${name}:`, error);
+      setIsLoading(false); // Set loading to false if an error occurs
     }
   };
 
@@ -175,8 +194,17 @@ const Homepage = () => {
         selectedPokemon={selectedPokemon}
         setSelectedPokemon={setSelectedPokemon}
       />
+      {/* Loading indicators with backdrops */}
+      {(isLoading || isSearching || isFiltering) && (
+        <Backdrop open={isLoading || isSearching || isFiltering}>
+          <LoadingContainer>
+            <CircularProgress />
+          </LoadingContainer>
+        </Backdrop>
+      )}
     </StyledHomepage>
   );
 };
 
 export default Homepage;
+
