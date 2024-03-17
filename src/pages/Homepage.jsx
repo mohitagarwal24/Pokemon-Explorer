@@ -61,16 +61,14 @@ const Homepage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("");
   const [selectedPokemonOfType, setSelectedPokemonOfType] = useState([]);
-  const [isLoading, setIsLoading] = useState(false); // State for tracking loading status
-  const [isSearching, setIsSearching] = useState(false); // State for tracking search loading status
-  const [isFiltering, setIsFiltering] = useState(false); // State for tracking filter loading status
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [isFiltering, setIsFiltering] = useState(false);
 
   useEffect(() => {
     const fetchPokemonList = async () => {
       try {
-        const response = await axios.get(
-          "https://pokeapi.co/api/v2/pokemon?limit=20"
-        );
+        const response = await axios.get("https://pokeapi.co/api/v2/pokemon?limit=20");
         setPokemonList(response.data.results);
         setFilteredPokemonList(response.data.results);
       } catch (error) {
@@ -86,19 +84,12 @@ const Homepage = () => {
       if (selectedType) {
         setIsFiltering(true);
         try {
-          const response = await axios.get(
-            `https://pokeapi.co/api/v2/type/${selectedType}`
-          );
-          const pokemonOfType = response.data.pokemon.map(
-            (pokemon) => pokemon.pokemon.name
-          );
+          const response = await axios.get(`https://pokeapi.co/api/v2/type/${selectedType}`);
+          const pokemonOfType = response.data.pokemon.map((pokemon) => pokemon.pokemon.name);
           setSelectedPokemonOfType(pokemonOfType);
           setIsFiltering(false);
         } catch (error) {
-          console.error(
-            `Error fetching Pokémon of type ${selectedType}:`,
-            error
-          );
+          console.error(`Error fetching Pokémon of type ${selectedType}:`, error);
           setIsFiltering(false);
         }
       }
@@ -111,20 +102,25 @@ const Homepage = () => {
     let filteredList = pokemonList;
 
     if (selectedType && selectedPokemonOfType.length > 0) {
-      filteredList = filteredList.filter((pokemon) =>
-        selectedPokemonOfType.includes(pokemon.name)
-      );
+      filteredList = filteredList.filter((pokemon) => selectedPokemonOfType.includes(pokemon.name));
     }
 
     if (searchTerm) {
       setIsSearching(true);
-      filteredList = filteredList.filter((pokemon) =>
-        pokemon.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      const debounceTimer = setTimeout(() => {
+        filteredList = filteredList.filter((pokemon) =>
+          pokemon.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setIsSearching(false);
+        setFilteredPokemonList(filteredList);
+      }, 1000);
+
+      return () => clearTimeout(debounceTimer);
+    } else {
+      setIsLoading(false);
+      setFilteredPokemonList(filteredList);
       setIsSearching(false);
     }
-
-    setFilteredPokemonList(filteredList);
   }, [pokemonList, searchTerm, selectedType, selectedPokemonOfType]);
 
   const handleSearch = (term) => {
@@ -137,16 +133,14 @@ const Homepage = () => {
 
   const handleClickPokemon = async (name) => {
     try {
-      setIsLoading(true); // Set loading to true when fetching starts
-      const response = await axios.get(
-        `https://pokeapi.co/api/v2/pokemon/${name}`
-      );
+      setIsLoading(true);
+      const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${name}`);
       setSelectedPokemon(response.data);
       setIsModalOpen(true);
-      setIsLoading(false); // Set loading to false when fetching completes
+      setIsLoading(false);
     } catch (error) {
       console.error(`Error fetching details for Pokemon ${name}:`, error);
-      setIsLoading(false); // Set loading to false if an error occurs
+      setIsLoading(false);
     }
   };
 
@@ -164,7 +158,11 @@ const Homepage = () => {
     <StyledHomepage>
       <Title>Pokémon Explorer</Title>
       <SearchandFilter>
-        <SearchBar onSearch={handleSearch} onKeyPress={handleKeyPress} />
+        <SearchBar
+          onSearch={handleSearch}
+          onKeyPress={handleKeyPress}
+          onChange={handleSearch}
+        />
         <FilterOptions
           types={["fire", "water", "grass", "bug", "flying", "poison"]}
           selectedType={selectedType}
@@ -194,7 +192,6 @@ const Homepage = () => {
         selectedPokemon={selectedPokemon}
         setSelectedPokemon={setSelectedPokemon}
       />
-      {/* Loading indicators with backdrops */}
       {(isLoading || isSearching || isFiltering) && (
         <Backdrop open={isLoading || isSearching || isFiltering}>
           <LoadingContainer>
@@ -207,4 +204,3 @@ const Homepage = () => {
 };
 
 export default Homepage;
-

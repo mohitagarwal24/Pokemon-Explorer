@@ -5,7 +5,10 @@ const SearchBar = ({ onSearch }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleChange = (event) => {
-    setSearchTerm(event.target.value);
+    const newSearchTerm = event.target.value;
+    setSearchTerm(newSearchTerm);
+    // Call the onSearch callback with the updated search term
+    onSearch(newSearchTerm);
   };
 
   const handleSubmit = (event) => {
