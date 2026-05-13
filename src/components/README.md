@@ -84,9 +84,17 @@
 - **Props:**
   - `pokemon`: full Pokémon object containing images, types, abilities, and stats.
 - **Features:**
-  - Displays front and back Pokémon images.
+  - Displays front, back, and shiny Pokémon sprites with previous/next controls.
   - Shows Pokémon types with `TypeBox`.
-  - Displays stats with animated `StatBar`.
-  - "Add to Favorites" button with soft sound effect on click.
-  - Toast notification confirming addition to favorites.
+  - Shows height, weight, and base stat total summary metrics.
+  - Uses tabs for overview, stats, and moves.
+  - Displays stats with animated `StatBar` values.
+  - Expands ability metadata when an ability row is clicked.
+  - Favorite toggle persists selections in localStorage and plays a soft sound.
+  - Toast notification confirms favorite changes.
   - Animated entrance/exit using Framer Motion.
+- **Testing:**
+  - Verify overview metrics and type information render.
+  - Verify sprite navigation.
+  - Verify favorite persistence.
+  - Verify stats/moves tab switching and ability expansion.

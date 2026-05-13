@@ -39,7 +39,7 @@ const CardInner = styled.div`
   position: relative;
   transform-style: preserve-3d;
   transition: transform 0.7s ease;
-  transform: ${({ flipped }) => (flipped ? "rotateY(180deg)" : "none")};
+  transform: ${({ $flipped }) => ($flipped ? "rotateY(180deg)" : "none")};
 `;
 
 const CardFace = styled.div`
@@ -56,11 +56,11 @@ const CardFace = styled.div`
 `;
 
 const CardFront = styled(CardFace)`
-  background: ${({ color }) => `linear-gradient(135deg, ${color}, #ffffff)`};
+  background: ${({ $color }) => `linear-gradient(135deg, ${$color}, #ffffff)`};
 `;
 
 const CardBack = styled(CardFace)`
-  background: ${({ color }) => `linear-gradient(135deg, #1c1c1c, ${color})`};
+  background: ${({ $color }) => `linear-gradient(135deg, #1c1c1c, ${$color})`};
   color: white;
   transform: rotateY(180deg);
   gap: 10px;
@@ -143,9 +143,9 @@ const PokemonCard = ({ pokemon }) => {
       onMouseLeave={() => setFlipped(false)}
       onClick={() => setFlipped(!flipped)}
     >
-      <CardInner flipped={flipped}>
+      <CardInner $flipped={flipped}>
         {/* FRONT */}
-        <CardFront color={color}>
+        <CardFront $color={color}>
           {data && <Number>#{data.number}</Number>}
           <PokemonImage
             src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`}
@@ -154,7 +154,7 @@ const PokemonCard = ({ pokemon }) => {
         </CardFront>
 
         {/* BACK */}
-        <CardBack color={color}>
+        <CardBack $color={color}>
           {data ? <Badge>{data.type}</Badge> : <Badge>Loading...</Badge>}
           {data && (
             <Stats>

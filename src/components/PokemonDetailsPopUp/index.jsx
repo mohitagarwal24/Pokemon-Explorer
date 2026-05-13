@@ -7,16 +7,19 @@ import { motion } from "framer-motion";
 // ✅ المسار الصحيح
 import PokemonDetails from "../PokemonDetails";
 
-const StyledModalContent = styled(motion(Paper))`
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 10px;
+const MotionPaper = motion.create(Paper);
+
+const StyledModalContent = styled(MotionPaper)`
+  position: relative;
+  padding: 0;
+  background-color: transparent;
+  border-radius: 16px;
   max-height: 80vh;
   overflow-y: auto;
+  outline: none;
 
   @media screen and (max-width: 900px) {
-    width: 90%;
-    padding: 10px;
+    max-height: 88vh;
   }
 `;
 
@@ -24,6 +27,12 @@ const CloseButton = styled(IconButton)`
   position: absolute;
   top: 10px;
   right: 10px;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.78);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.94);
+  }
 `;
 
 const PokemonDetailsPopUp = ({
