@@ -37,8 +37,9 @@ const TypeButton = styled.button`
   font-weight: bold;
   font-size: 0.85rem;
   transition: all 0.2s;
-  background-color: ${({ active, color }) => (active ? color : "rgba(0,0,0,0.05)")};
-  color: ${({ active }) => (active ? "#fff" : "#333")};
+  background-color: ${({ $active, $color }) =>
+    $active ? $color : "rgba(0,0,0,0.05)"};
+  color: ${({ $active }) => ($active ? "#fff" : "#333")};
 
   &:hover {
     opacity: 0.8;
@@ -49,8 +50,8 @@ const FilterOptions = ({ types = [], selectedType = "", onSelectType = () => {} 
   return (
     <FilterContainer>
       <TypeButton
-        active={selectedType === ""}
-        color="#888"
+        $active={selectedType === ""}
+        $color="#888"
         onClick={() => onSelectType("")}
       >
         All
@@ -58,8 +59,8 @@ const FilterOptions = ({ types = [], selectedType = "", onSelectType = () => {} 
       {types.map((type) => (
         <TypeButton
           key={type}
-          active={selectedType === type}
-          color={typeColors[type] || "#ccc"}
+          $active={selectedType === type}
+          $color={typeColors[type] || "#ccc"}
           onClick={() => onSelectType(type)}
         >
           {type.charAt(0).toUpperCase() + type.slice(1)}

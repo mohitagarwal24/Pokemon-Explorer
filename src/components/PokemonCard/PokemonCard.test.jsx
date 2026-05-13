@@ -23,9 +23,13 @@ const mockApiResponse = {
 
 // Mock axios لمنع الطلبات الحقيقية
 jest.mock("axios");
-axios.get.mockResolvedValue(mockApiResponse);
 
 describe("PokemonCard Component", () => {
+  beforeEach(() => {
+    axios.get.mockReset();
+    axios.get.mockResolvedValue(mockApiResponse);
+  });
+
   test("renders Pokemon name and image", async () => {
     render(<PokemonCard pokemon={mockPokemonData} />);
     const name = await screen.findByText(/pikachu/i);
